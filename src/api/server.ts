@@ -14,14 +14,8 @@ export const startServer = async (config: IConfig) => {
   const postController = new PostController(config);
 
   app.use("/api/v1", api);
-  api.use(
-    "/api/v1/users",
-    routers.setupUsersRoutes(authMiddleware, userController)
-  );
-  api.use(
-    "/api/v1/posts",
-    routers.setupPostsRoutes(authMiddleware, postController)
-  );
+  api.use("/users", routers.setupUsersRoutes(authMiddleware, userController));
+  api.use("/posts", routers.setupPostsRoutes(authMiddleware, postController));
   app.use(errorMiddleware.handleError);
   app.use(errorMiddleware.handle404);
 
