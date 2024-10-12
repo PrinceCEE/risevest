@@ -1,7 +1,7 @@
 import { User, UserRepository } from "src/database";
 import { InternalServerError, NotImplementedError } from "src/errors";
 import { TopUsersResponse } from "src/types";
-import { generateID } from "src/utils";
+import { generateID, mapToTopUsersResponse } from "src/utils";
 
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
@@ -48,7 +48,8 @@ export class UserService {
   }
 
   async getTopUsers(): Promise<TopUsersResponse[]> {
-    throw new NotImplementedError();
+    const topUsers = await this.userRepository.getTopUsers();
+    return topUsers.map((t) => mapToTopUsersResponse(t));
   }
 
   async findById(id: string): Promise<User> {

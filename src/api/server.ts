@@ -1,4 +1,5 @@
 import express from "express";
+import http from "http";
 import { IConfig } from "src/types";
 import { routers } from "./routes";
 import { AuthMiddlewares, ErrorMiddlewares } from "./middlewares";
@@ -19,5 +20,10 @@ export const startServer = async (config: IConfig) => {
   app.use(errorMiddleware.handleError);
   app.use(errorMiddleware.handle404);
 
-  app.listen("", () => {});
+  const server = http.createServer(app);
+  server.listen(config.env.PORT, () => {
+    console.log(`Server started on port :${config.env.PORT}`);
+  });
+
+  return server;
 };

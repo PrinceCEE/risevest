@@ -63,7 +63,7 @@ test("Test services", async (t) => {
   });
 
   await t.test("Can't create Post", async (t) => {
-    assert.rejects(async () => {
+    await assert.rejects(async () => {
       t.mock
         .method(postRepositoryMock, "createPost")
         .mock.mockImplementationOnce(() => Promise.resolve(null));

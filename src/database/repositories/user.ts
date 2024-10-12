@@ -36,5 +36,40 @@ export class UserRepository {
     return result;
   }
 
-  async getTopUsers() {}
+  async getTopUsers() {
+    const query = `
+    WITH top_users AS (
+      SELECT user_id, COUNT(*) as post_count
+      FROM posts
+      GROUP BY user_id
+      ORDER BY post_count DESC
+      LIMIT 3
+    ),
+    latest_comments AS (
+      SELECT DISTINCT ON (c.user_id)
+          c.user_id,
+          c.content,
+          c.created_at,
+          p.title as post_title
+      FROM comments c
+      JOIN posts p ON c.post_id = p.id
+      WHERE c.user_id IN (SELECT user_id FROM top_users)
+      ORDER BY c.user_id, c.created_at DESC
+    )
+    SELECT
+        u.id as user_id,
+        u.username as username,
+        tu.post_count,
+        lc.post_title,
+        lc.content as latest_comment,
+        lc.created_at as comment_created_at
+    FROM top_users tu
+    JOIN users u ON tu.user_id = u.id
+    LEFT JOIN latest_comments lc ON u.id = lc.user_id
+    ORDER BY tu.post_count DESC;
+    `;
+
+    const result = await db.query(query);
+    return result;
+  }
 }

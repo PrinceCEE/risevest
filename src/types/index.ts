@@ -1,3 +1,4 @@
+import { Mock } from "node:test";
 import { User } from "src/database";
 import { PostService, UserService } from "src/services";
 
@@ -60,10 +61,12 @@ export interface UserResponse {
 }
 
 export interface TopUsersResponse {
-  id: string;
-  name: string;
+  userId: string;
+  username: string;
   postTitle: string;
-  commentContent: string;
+  postCount: number;
+  latestComment: string;
+  commentCreatedAt: Date;
 }
 
 export type CreateUser = {
@@ -87,3 +90,5 @@ export type CreateComment = {
   userId: string;
   postId: string;
 };
+
+export type MockFn = Mock<() => any>;

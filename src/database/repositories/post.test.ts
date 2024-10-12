@@ -111,4 +111,61 @@ describe("Post repository tests", async () => {
     const posts = await postRepository.findPostsByUserId(generateID());
     assert.ok(posts.length === 0);
   });
+
+  it("fetch top users", async (t) => {
+    let users = [];
+    for await (const _ of new Array(10).fill(null)) {
+      users.push(
+        await userRepository.createUser({
+          email: faker.internet.email().toLowerCase(),
+          username: faker.internet.userName().toLowerCase(),
+          id: generateID(),
+          name: faker.person.fullName(),
+          password: faker.internet.password({ length: 100 }),
+        })
+      );
+    }
+
+    const posts = [];
+    for await (const _ of new Array(100).fill(null)) {
+      const idx = Math.floor(Math.random() * users.length);
+      posts.push(
+        await postRepository.createPost({
+          id: generateID(),
+          title: faker.lorem.paragraph(1),
+          content: faker.lorem.paragraph(5),
+          userId: users[idx].id,
+        })
+      );
+    }
+
+    const comments = [];
+    for await (const post of posts) {
+      const idxUsers = Math.floor(Math.random() * users.length);
+
+      comments.push(
+        await postRepository.createComment({
+          id: generateID(),
+          postId: post.id,
+          userId: users[idxUsers].id,
+          content: faker.lorem.paragraph(3),
+        })
+      );
+    }
+
+    const topUsers = await userRepository.getTopUsers();
+    assert.equal(topUsers.length, 3);
+
+    await Promise.all([
+      db.query("DELETE FROM comments WHERE id = ANY($1)", [
+        comments.map((c) => c.id),
+      ]),
+      db.query("DELETE FROM posts WHERE id = ANY($1)", [
+        posts.map((p) => p.id),
+      ]),
+      db.query("DELETE FROM users WHERE id = ANY($1)", [
+        users.map((u) => u.id),
+      ]),
+    ]);
+  });
 });
