@@ -1,6 +1,7 @@
+import { BaseEntity } from "./baseEntity";
 import { Comment } from "./comment";
 
-export class Post {
+export class Post extends BaseEntity {
   id: string;
   title: string;
   content: string;
