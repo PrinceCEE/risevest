@@ -23,6 +23,7 @@ test("Test services", async (t) => {
     findById: async () => {},
     getUsers: async () => [],
     getTopUsers: async () => [],
+    findByUsername: async () => {},
   };
 
   const userService = new UserService(userRepositoryMock);

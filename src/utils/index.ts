@@ -1,4 +1,4 @@
-import { compare, genSalt, hash } from "bcrypt";
+import { compare, genSalt, hash } from "bcryptjs";
 import { sign, verify } from "jsonwebtoken";
 import { v4 as uuid } from "uuid";
 import { Comment, Post, User } from "src/database";

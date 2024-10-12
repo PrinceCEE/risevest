@@ -1,5 +1,8 @@
 import express from "express";
 import http from "http";
+import cors from "cors";
+import morgan from "morgan";
+import helmet from "helmet";
 import { IConfig } from "src/types";
 import { routers } from "./routes";
 import { AuthMiddlewares, ErrorMiddlewares } from "./middlewares";
@@ -14,6 +17,10 @@ export const startServer = async (config: IConfig) => {
   const userController = new UserController(config);
   const postController = new PostController(config);
 
+  app.use(cors());
+  app.use(helmet());
+  app.use(express.json({ limit: "100kb" }));
+  app.use(morgan("dev"));
   app.use("/api/v1", api);
   api.use("/users", routers.setupUsersRoutes(authMiddleware, userController));
   api.use("/posts", routers.setupPostsRoutes(authMiddleware, postController));

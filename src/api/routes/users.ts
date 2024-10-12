@@ -11,7 +11,6 @@ export const setupUsersRoutes = (
 
   r.post(
     "/",
-    authMiddleware.validateUser,
     authMiddleware.validatePayload(CreateUserDto),
     usersController.createUser
   );
@@ -27,7 +26,7 @@ export const setupUsersRoutes = (
     authMiddleware.validateUser,
     usersController.getUserPosts
   );
-  r.get("/top-users", authMiddleware.validateUser, usersController.getUsers);
+  r.get("/top-users", authMiddleware.validateUser, usersController.getTopUsers);
 
   return r;
 };

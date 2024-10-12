@@ -13,13 +13,22 @@ import {
   mapPostToPostResponse,
   mapUserToUserResponse,
 } from "src/utils";
-import { UnauthorizedError } from "src/errors";
+import { BadRequestError, UnauthorizedError } from "src/errors";
 
 export class UserController extends Application {
   createUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data: CreateUserDto = req.body;
       data.password = await hashPassword(data.password);
+
+      if (await this.config.services.userService.findByEmail(data.email)) {
+        throw new BadRequestError("User with email already exists");
+      }
+      if (
+        await this.config.services.userService.findByUsername(data.username)
+      ) {
+        throw new BadRequestError("User with username already exists");
+      }
 
       const user = await this.config.services.userService.createUser(data);
       const accessToken = await generateAccessToken({ sub: user.id });
@@ -35,7 +44,7 @@ export class UserController extends Application {
         };
 
       res.json(response);
-    } catch (err) {
+    } catch (err: any) {
       next(err);
     }
   };

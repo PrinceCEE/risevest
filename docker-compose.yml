@@ -1,0 +1,36 @@
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      DB_URL: postgresql://user:password@postgres:5432/risevest
+      PORT: 3000
+      JWT_SECRET: s3cret
+      REDIS_URL: redis://redis:6379
+
+  postgres:
+    image: postgres:16
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: risevest
+    volumes:
+      - postgres-data:/data/db
+
+  redis:
+    image: redis:6.2
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+volumes:
+  postgres-data:
+  redis-data:

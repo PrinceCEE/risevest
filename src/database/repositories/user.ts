@@ -14,6 +14,12 @@ export class UserRepository {
     return result[0];
   }
 
+  async findByUsername(username: string) {
+    const query = "SELECT * FROM users WHERE username = $1";
+    const result = await db.query(query, [username]);
+    return result[0];
+  }
+
   async createUser(user: CreateUser) {
     const query = `
       INSERT INTO users (id, name, email, username, password)

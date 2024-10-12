@@ -19,8 +19,9 @@ async function main() {
   const config: IConfig = {
     env: {
       DB_URL: process.env.DB_URL!,
-      PORT: process.env.PORT!,
+      PORT: process.env.PORT || "3000",
       JWT_SECRET: process.env.JWT_SECRET!,
+      REDIS_URL: process.env.REDIS_URL!,
     },
     services: { userService, postService },
   };
@@ -35,7 +36,7 @@ async function main() {
 
 async function gracefulShutdown(server: http.Server, signal: string) {
   try {
-    console.log(`Received ${signal} signal. Starting graceful shutdown`);
+    console.log(`\nReceived ${signal} signal. Starting graceful shutdown\n`);
 
     await new Promise((res, rej) => {
       server.close((err) => {

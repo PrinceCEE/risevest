@@ -1,5 +1,5 @@
 import { User, UserRepository } from "src/database";
-import { InternalServerError, NotImplementedError } from "src/errors";
+import { InternalServerError } from "src/errors";
 import { TopUsersResponse } from "src/types";
 import { generateID, mapToTopUsersResponse } from "src/utils";
 
@@ -54,6 +54,44 @@ export class UserService {
 
   async findById(id: string): Promise<User> {
     const user = await this.userRepository.findById(id);
+    if (!user) {
+      return user;
+    }
+
+    return User.create(User, {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      name: user.name,
+      password: user.password,
+      createdAt: user.created_at,
+      updatedAt: user.updated_at,
+    });
+  }
+
+  async findByEmail(email: string): Promise<User> {
+    const user = await this.userRepository.findByEmail(email);
+    if (!user) {
+      return user;
+    }
+
+    return User.create(User, {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      name: user.name,
+      password: user.password,
+      createdAt: user.created_at,
+      updatedAt: user.updated_at,
+    });
+  }
+
+  async findByUsername(username: string): Promise<User> {
+    const user = await this.userRepository.findByUsername(username);
+    if (!user) {
+      return user;
+    }
+
     return User.create(User, {
       id: user.id,
       email: user.email,

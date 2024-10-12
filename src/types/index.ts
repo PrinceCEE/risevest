@@ -14,6 +14,7 @@ export interface IConfig {
     DB_URL: string;
     PORT: string;
     JWT_SECRET: string;
+    REDIS_URL: string;
   };
   services: {
     postService: PostService;

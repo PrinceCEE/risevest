@@ -36,6 +36,8 @@ test("UserController tests", async (t) => {
         getUsers: mock.fn(),
         findUserPosts: mock.fn(),
         getTopUsers: mock.fn(),
+        findByEmail: mock.fn(),
+        findByUsername: mock.fn(),
       } as unknown as UserService,
       postService: {
         createPost: mock.fn(),
@@ -89,6 +91,12 @@ test("UserController tests", async (t) => {
     mock
       .method(configMock.services.userService, "createUser")
       .mock.mockImplementationOnce(() => Promise.resolve(user));
+    mock
+      .method(configMock.services.userService, "findByEmail")
+      .mock.mockImplementationOnce(() => Promise.resolve(null as any));
+    mock
+      .method(configMock.services.userService, "findByUsername")
+      .mock.mockImplementationOnce(() => Promise.resolve(null as any));
 
     req.body = createUserDto;
     assert.equal((res.json as MockFn).mock.callCount(), 0);
