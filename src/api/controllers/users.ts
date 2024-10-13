@@ -14,6 +14,7 @@ import {
   mapUserToUserResponse,
 } from "src/utils";
 import { BadRequestError, UnauthorizedError } from "src/errors";
+import { cache } from "src/cache";
 
 export class UserController extends Application {
   createUser = async (req: Request, res: Response, next: NextFunction) => {
@@ -112,7 +113,22 @@ export class UserController extends Application {
 
   getTopUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const topUsers = await this.config.services.userService.getTopUsers();
+      let topUsers: TopUsersResponse[] = await cache.get("top-users");
+      if (topUsers?.length) {
+        const response: ApiResponse<{ users: TopUsersResponse[] }> = {
+          success: true,
+          message: "Fetched top users",
+          data: { users: topUsers },
+        };
+
+        res.json(response);
+        return;
+      }
+
+      topUsers = await this.config.services.userService.getTopUsers();
+      if (topUsers.length === 3) {
+        await cache.set("top-users", topUsers); // cache it when it's up to 3 top users
+      }
       const response: ApiResponse<{ users: TopUsersResponse[] }> = {
         success: true,
         message: "Fetched top users",

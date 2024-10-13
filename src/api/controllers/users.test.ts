@@ -15,6 +15,7 @@ import {
 import { PostService, UserService } from "src/services";
 import * as utils from "src/utils";
 import { UserController } from "./users";
+import { cache } from "src/cache";
 
 test("UserController tests", async (t) => {
   const req = {
@@ -97,6 +98,12 @@ test("UserController tests", async (t) => {
     mock
       .method(configMock.services.userService, "findByUsername")
       .mock.mockImplementationOnce(() => Promise.resolve(null as any));
+    mock
+      .method(cache, "set")
+      .mock.mockImplementationOnce(() => Promise.resolve(null));
+    mock
+      .method(cache, "get")
+      .mock.mockImplementationOnce(() => Promise.resolve(null));
 
     req.body = createUserDto;
     assert.equal((res.json as MockFn).mock.callCount(), 0);

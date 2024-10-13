@@ -6,6 +6,7 @@ import { startServer } from "./api";
 import { db, migration, PostRepository, UserRepository } from "./database";
 import { PostService, UserService } from "./services";
 import { IConfig } from "./types";
+import { cache } from "./cache";
 
 async function main() {
   dotenv.config();
@@ -28,6 +29,7 @@ async function main() {
 
   db.connectDB(config.env.DB_URL);
   await db.query(migration.up);
+  await cache.connectCache(config.env.REDIS_URL);
   const server = await startServer(config);
 
   process.on("SIGTERM", () => gracefulShutdown(server, "SIGTERM"));
@@ -38,6 +40,7 @@ async function gracefulShutdown(server: http.Server, signal: string) {
   try {
     console.log(`\nReceived ${signal} signal. Starting graceful shutdown\n`);
 
+    await cache.disconnectCache();
     await new Promise((res, rej) => {
       server.close((err) => {
         if (err) {
